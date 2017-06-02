@@ -1,0 +1,61 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+repositories {
+    maven {
+        url "https://repo1.maven.org/maven2/"
+    }
+}
+
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+
+        applicationId "com.wellingtonmb88.bitwallet"
+
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.kotlin.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        test.kotlin.srcDirs += 'src/test/kotlin'
+    }
+}
+
+final versions = rootProject.ext
+
+dependencies {
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$versions.kotlin"
+
+    //App Dependencies
+    compile "com.android.support:appcompat-v7:$versions.support"
+    compile "com.android.support:recyclerview-v7:$versions.support"
+    compile "com.android.support:cardview-v7:$versions.support"
+    compile "com.android.support:support-annotations:$versions.support"
+    compile "com.android.support:design:$versions.support"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'org.bitcoinj:bitcoinj-core:0.14.4'
+
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+}
