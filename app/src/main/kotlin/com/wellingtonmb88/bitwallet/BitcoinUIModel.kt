@@ -13,14 +13,10 @@ class BitcoinUIModel {
     private var syncProgress: Double = -1.0
     private var syncProgressUpdater = ProgressBarUpdater()
 
-    constructor(wallet: Wallet) {
-        setWallet(wallet)
-    }
-
-    private fun setWallet(wallet: Wallet) {
-        wallet.addChangeEventListener { wallet ->
-            update(wallet)
-        }
+    fun setWallet(wallet: Wallet) {
+//        wallet.addChangeEventListener { wallet ->
+//            update(wallet)
+//        }
         update(wallet)
     }
 
