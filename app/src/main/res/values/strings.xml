@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BitWallet</string>
+    <string name="balance">Balance: 0.000 BTC</string>
+    <string name="send_bitcoin">Send Bitcoin</string>
+    <string name="wallet_address">Send Coin to Wallet Address</string>
+    <string name="my_address">My Address</string>
 </resources>

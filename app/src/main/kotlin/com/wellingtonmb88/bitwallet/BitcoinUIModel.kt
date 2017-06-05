@@ -12,11 +12,13 @@ class BitcoinUIModel {
     private var balance = Coin.ZERO
     private var syncProgress: Double = -1.0
     private var syncProgressUpdater = ProgressBarUpdater()
+    private lateinit var wallet: Wallet
 
     fun setWallet(wallet: Wallet) {
 //        wallet.addChangeEventListener { wallet ->
 //            update(wallet)
 //        }
+        this.wallet = wallet
         update(wallet)
     }
 
@@ -52,5 +54,9 @@ class BitcoinUIModel {
 
     fun balanceProperty(): Coin {
         return balance
+    }
+
+    fun walletProperty(): Wallet {
+        return wallet
     }
 }
