@@ -6,18 +6,15 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.*
-import org.bitcoinj.core.Address
-import org.bitcoinj.core.Coin
-import org.bitcoinj.core.NetworkParameters
-import org.bitcoinj.core.Transaction
+import org.bitcoinj.core.*
 import org.bitcoinj.core.listeners.DownloadProgressTracker
 import org.bitcoinj.kits.WalletAppKit
-import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.RegTestParams
 import org.bitcoinj.params.TestNet3Params
 import org.bitcoinj.utils.BriefLogFormatter
 import org.bitcoinj.utils.MonetaryFormat
 import org.bitcoinj.wallet.DeterministicSeed
+import org.bitcoinj.wallet.KeyChainGroup
 import org.bitcoinj.wallet.SendRequest
 import org.bitcoinj.wallet.Wallet
 import org.bitcoinj.wallet.listeners.AbstractWalletEventListener
@@ -44,8 +41,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        params = MainNetParams.get()
-//        params = TestNet3Params.get()
+//        params = MainNetParams.get()
+        params = TestNet3Params.get()
     }
 
     override fun onStop() {
@@ -73,6 +70,13 @@ class MainActivity : AppCompatActivity() {
                 override fun onCoinsReceived(wallet: Wallet, tx: Transaction, prevBalance: Coin, newBalance: Coin) {
                     super.onCoinsReceived(wallet, tx, prevBalance, newBalance)
                     // Runs in the dedicated "user thread".
+
+
+
+//                    val value = tx.getValueSentToMe(wallet)
+//                    val input = tx.inputs[0]
+//                    val from = tx.outputs[0].isAvailableForSpending
+//                    wallet.sendCoins(walletAppKit?.peerGroup(), from, value)
                     updateBalance(newBalance)
                     hideProgressBar()
                     showToast("Coins were received!")
@@ -86,6 +90,8 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onWalletChanged(wallet: Wallet?) {
                     super.onWalletChanged(wallet)
+
+                    wallet?.watchedAddresses
                     Log.d(APP_NAME, "onWalletChanged")
                 }
             })
@@ -130,10 +136,22 @@ class MainActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
 
+
                     val sendToAdr = Address.fromBase58(params, TPFAUCET_RETURN_ADR)
+
+                    val Address = Address.fromBase58(params, "mwrT7sgyE2uy197wTbVD3nSzLtPCDhL1Yq")
+                    val group = KeyChainGroup(Address.parameters)
+
+                     val wallet2 = Wallet(Address.parameters, group)
+
                     val request = SendRequest.to(sendToAdr, sendValue)
 
-                    val result = it.sendCoins(request)
+                    request.aesKey = wallet.keyCrypter?.deriveKey("password")
+
+                    val balanceAVAILABLE_SPENDABLE = wallet.getBalance(Wallet.BalanceType.AVAILABLE_SPENDABLE)
+                    val balanceAVAILABLE = wallet.getBalance(Wallet.BalanceType.AVAILABLE)
+
+                    val result = wallet.sendCoins(request)
 
                     result?.broadcastComplete?.addListener(Runnable {
                         Log.d(APP_NAME, "Coins were sent. Transaction hash: ${result.tx.hashAsString}")
@@ -206,6 +224,26 @@ class MainActivity : AppCompatActivity() {
             // wallet = mwrT7sgyE2uy197wTbVD3nSzLtPCDhL1Yq
             val wallet = it.wallet()
             model.setWallet(wallet)
+
+            val address = Address.fromBase58(params, "mwrT7sgyE2uy197wTbVD3nSzLtPCDhL1Yq")
+            wallet.addWatchedAddress(address)
+
+            Log.d(APP_NAME, "My Wallet: $wallet")
+
+            val keys : MutableList<ECKey> = mutableListOf()
+            wallet.issuedReceiveKeys.forEach { issuedReceiveKey ->
+
+                val address = issuedReceiveKey.toAddress(params)
+
+                if(address.toBase58().equals("mzQe3KGaNcc3W54najJoqWm3NVTnGxPHCN")
+                        || address.toBase58().equals("mwrT7sgyE2uy197wTbVD3nSzLtPCDhL1Yq")){
+                    keys.add(issuedReceiveKey)
+                }
+            }
+
+            val wallet3 = Wallet.fromKeys(params, keys)
+
+            Log.d(APP_NAME, "My Wallet3: $wallet3")
 
             runOnUiThread {
                 Log.d(APP_NAME, "My current Address: ${wallet.currentReceiveAddress()}")

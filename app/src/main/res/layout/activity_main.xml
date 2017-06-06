@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="com.wellingtonmb88.bitwallet.MainActivity">
 
+
     <TextView
         android:id="@+id/wallet_address"
         style="@style/TextAppearance.AppCompat.Large"
